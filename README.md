@@ -20,5 +20,4 @@
 
 1. **Клонируй репозиторий** (или скачай архив):
    ```bash
-   git clone https://github.com/твой-логин/hr-demo.git
-   cd hr-demo
+  https://github.com/RomaSesh/ket-hr-frontend
