@@ -20,4 +20,6 @@
 
 1. **Клонируй репозиторий** (или скачай архив):
    ```bash
-  https://github.com/RomaSesh/ket-hr-frontend
+  git clone https://github.com/RomaSesh/ket-hr-frontend.git
+cd ket-hr-frontend
+
