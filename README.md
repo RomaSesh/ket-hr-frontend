@@ -19,7 +19,7 @@
 ##  Установка и запуск
 
 1. **Клонируй репозиторий** (или скачай архив):
-   ```bash
-  git clone https://github.com/RomaSesh/ket-hr-frontend.git
+   ```bash  git clone https://github.com/RomaSesh/ket-hr-frontend.git
 cd ket-hr-frontend
+
 
