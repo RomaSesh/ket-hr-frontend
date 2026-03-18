@@ -16,10 +16,9 @@
 - **JavaScript (ES6+)** — язык программирования.
 - **CSS** — для базовой стилизации (можно расширить).
 
-##  Установка и запуск
-
-1. **Клонируй репозиторий** (или скачай архив):
-   ```bash  git clone https://github.com/RomaSesh/ket-hr-frontend.git
-cd ket-hr-frontend
+1. **Клонируй репозиторий**:
+   ```bash
+   git clone https://github.com/RomaSesh/ket-hr-frontend.git
+   cd ket-hr-frontend
 
 
