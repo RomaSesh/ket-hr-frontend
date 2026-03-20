@@ -39,3 +39,98 @@
 ```bash
 git clone https://github.com/RomaSesh/ket-hr-frontend.git
 cd ket-hr-frontend
+
+**2. Настройка базы данных**
+Создайте базу данных hr_management (например, через pgAdmin или командой createdb hr_management).
+
+Выполните скрипт создания таблиц:
+
+bash
+psql -U postgres -d hr_management -f database/schema.sql
+(Опционально) Заполните тестовыми данными:
+
+bash
+psql -U postgres -d hr_management -f database/seed.sql
+Тестовые данные включают отделы (IT, HR, Финансы), должности и несколько сотрудников.
+
+**3. Запуск бэкенда (FastAPI)**
+bash
+cd backend
+python -m venv venv
+source venv/bin/activate            # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+Создайте файл .env в папке backend:
+
+ini
+DATABASE_URL=postgresql://postgres:ваш_пароль@localhost/hr_management
+SECRET_KEY=supersecretkey
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+Запустите сервер:
+
+bash
+uvicorn app.main:app --reload --port 8000
+API будет доступно: http://localhost:8000
+
+Swagger документация: http://localhost:8000/docs
+
+**4. Запуск фронтенда (React)**
+В новом терминале (не закрывая бэкенд):
+
+bash
+cd frontend
+npm install
+npm run dev
+Откройте браузер по адресу: http://localhost:5173
+
+**✅ Проверка работы**
+Таблица сотрудников должна загрузиться.
+
+Фильтр по отделам должен работать.
+
+Добавление, редактирование и удаление сотрудников должны сохранять изменения в базе данных.
+
+**🛠️ Дополнительные команды**
+Команда	Описание
+npm run build	Собрать фронтенд для продакшена (папка dist)
+uvicorn app.main:app --host 0.0.0.0 --port 8000	Запустить бэкенд на всех интерфейсах
+pip freeze > requirements.txt	Обновить список зависимостей бэкенда (после установки новых пакетов)
+🔧 Возможные проблемы и их решение
+**1. Ошибка подключения к базе данных**
+Убедитесь, что PostgreSQL запущен.
+
+Проверьте правильность данных в .env (хост, порт, имя БД, пользователь, пароль).
+
+**2. CORS ошибка в браузере**
+Убедитесь, что в backend/app/main.py в списке allow_origins указан адрес фронтенда: "http://localhost:5173".
+
+**3. Модуль не найден при запуске бэкенда**
+Активируйте виртуальное окружение (venv\Scripts\activate).
+
+Установите зависимости (pip install -r requirements.txt).
+
+**4. Не запускается фронтенд (npm run dev не работает)**
+Проверьте, что установлен Node.js (команда node -v).
+
+Удалите node_modules и package-lock.json, затем выполните npm install заново.
+
+**5. Ошибка 422 при добавлении сотрудника**
+Проверьте, что в базе данных есть записи в таблицах departments и positions. Если нет, выполните database/seed.sql или добавьте вручную.
+
+**6. Порт 8000 или 5173 уже занят**
+
+**📄 Лицензия**
+Проект создан в образовательных целях, не предназначен для коммерческого использования.
+
+После сохранения файла (например, `README.md`) выполните в терминале:
+```bash
+git add README.md
+git commit -m "docs: объединённый README с полной инструкцией по установке и запуску"
+git push
+Завершите процесс, использующий порт, или измените порт в командах (например, --port 8001 для бэкенда, --port 5174 для фронтенда). Не забудьте также обновить CORS в бэкенде.
+
+**Автор**
+Студент: Дружинин Роман
+Группа: 3-2ИС
+Учебное заведение: КЭТ им. Ф.В. Чижова
+GitHub репозиторий: RomaSesh/ket-hr-frontend
