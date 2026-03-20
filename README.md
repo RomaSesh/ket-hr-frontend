@@ -39,6 +39,7 @@
 ```bash
 git clone https://github.com/RomaSesh/ket-hr-frontend.git
 cd ket-hr-frontend
+```bash
 
 **2. Настройка базы данных**
 Создайте базу данных hr_management (например, через pgAdmin или командой createdb hr_management).
