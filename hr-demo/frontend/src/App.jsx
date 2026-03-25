@@ -5,6 +5,7 @@ import Employees from './pages/Employees';
 import Vacations from './pages/Vacations';
 import Vacancies from './pages/Vacancies';
 import Reports from './pages/Reports';
+import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 import Header from './components/Header';
 import './index.css';
@@ -18,11 +19,32 @@ function AppContent() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/employees" element={<PrivateRoute><Employees /></PrivateRoute>} />
-        <Route path="/vacations" element={<PrivateRoute><Vacations /></PrivateRoute>} />
-        <Route path="/vacancies" element={<PrivateRoute><Vacancies /></PrivateRoute>} />
-        <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
-        <Route path="/" element={<Navigate to="/employees" />} />
+        <Route path="/dashboard" element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        } />
+        <Route path="/employees" element={
+          <PrivateRoute>
+            <Employees />
+          </PrivateRoute>
+        } />
+        <Route path="/vacations" element={
+          <PrivateRoute>
+            <Vacations />
+          </PrivateRoute>
+        } />
+        <Route path="/vacancies" element={
+          <PrivateRoute>
+            <Vacancies />
+          </PrivateRoute>
+        } />
+        <Route path="/reports" element={
+          <PrivateRoute>
+            <Reports />
+          </PrivateRoute>
+        } />
+        <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
     </>
   );
