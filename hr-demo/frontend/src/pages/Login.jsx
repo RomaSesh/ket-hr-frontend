@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 import { toast } from 'react-toastify';
 
 const Login = () => {
@@ -14,25 +15,17 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          username: form.username,
-          password: form.password
-        })
+      const res = await api.post('/auth/login', new URLSearchParams(form), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail);
-      }
-      const data = await res.json();
+      const data = res.data;
       localStorage.setItem('access_token', data.access_token);
       toast.success('Вход выполнен');
       navigate('/employees');
     } catch (err) {
-      setError(err.message);
-      toast.error(err.message);
+      const msg = err.response?.data?.detail || 'Ошибка входа';
+      setError(msg);
+      toast.error(msg);
     }
   };
 

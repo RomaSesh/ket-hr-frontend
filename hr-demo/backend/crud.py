@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
+from datetime import datetime
 import models
 import schemas
 
@@ -101,5 +102,123 @@ def delete_employee(db: Session, employee_id: int) -> bool:
     if not emp:
         return False
     db.delete(emp)
+    db.commit()
+    return True
+
+# -------- Vacations --------
+def get_vacations(db: Session, skip: int = 0, limit: int = 100, employee_id: Optional[int] = None, status: Optional[str] = None):
+    query = db.query(models.Vacation)
+    if employee_id:
+        query = query.filter(models.Vacation.employee_id == employee_id)
+    if status:
+        query = query.filter(models.Vacation.status == status)
+    return query.offset(skip).limit(limit).all()
+
+def get_vacation(db: Session, vacation_id: int):
+    return db.get(models.Vacation, vacation_id)
+
+def create_vacation(db: Session, vacation: schemas.VacationCreate):
+    db_vac = models.Vacation(**vacation.dict())
+    db.add(db_vac)
+    db.commit()
+    db.refresh(db_vac)
+    return db_vac
+
+def update_vacation_status(db: Session, vacation_id: int, status: str, user_id: int):
+    db_vac = db.get(models.Vacation, vacation_id)
+    if not db_vac:
+        return None
+    db_vac.status = status
+    db_vac.approved_by = user_id
+    db_vac.approved_at = datetime.utcnow()
+    db.commit()
+    db.refresh(db_vac)
+    return db_vac
+
+def delete_vacation(db: Session, vacation_id: int):
+    db_vac = db.get(models.Vacation, vacation_id)
+    if not db_vac:
+        return False
+    db.delete(db_vac)
+    db.commit()
+    return True
+
+# -------- Vacancies --------
+def get_vacancies(db: Session, skip: int = 0, limit: int = 100, status: Optional[str] = None):
+    query = db.query(models.Vacancy)
+    if status:
+        query = query.filter(models.Vacancy.status == status)
+    return query.offset(skip).limit(limit).all()
+
+def get_vacancy(db: Session, vacancy_id: int):
+    return db.get(models.Vacancy, vacancy_id)
+
+def create_vacancy(db: Session, vacancy: schemas.VacancyCreate):
+    db_vac = models.Vacancy(**vacancy.dict())
+    db.add(db_vac)
+    db.commit()
+    db.refresh(db_vac)
+    return db_vac
+
+def update_vacancy(db: Session, vacancy_id: int, vacancy_update: schemas.VacancyCreate):
+    db_vac = db.get(models.Vacancy, vacancy_id)
+    if not db_vac:
+        return None
+    for key, value in vacancy_update.dict(exclude_unset=True).items():
+        setattr(db_vac, key, value)
+    db.commit()
+    db.refresh(db_vac)
+    return db_vac
+
+def close_vacancy(db: Session, vacancy_id: int):
+    db_vac = db.get(models.Vacancy, vacancy_id)
+    if not db_vac:
+        return None
+    db_vac.status = "closed"
+    db.commit()
+    db.refresh(db_vac)
+    return db_vac
+
+def delete_vacancy(db: Session, vacancy_id: int):
+    vac = db.get(models.Vacancy, vacancy_id)
+    if not vac:
+        return False
+    db.delete(vac)
+    db.commit()
+    return True
+
+# -------- Candidates --------
+def get_candidates(db: Session, skip: int = 0, limit: int = 100, vacancy_id: Optional[int] = None, status: Optional[str] = None):
+    query = db.query(models.Candidate)
+    if vacancy_id:
+        query = query.filter(models.Candidate.vacancy_id == vacancy_id)
+    if status:
+        query = query.filter(models.Candidate.status == status)
+    return query.offset(skip).limit(limit).all()
+
+def get_candidate(db: Session, candidate_id: int):
+    return db.get(models.Candidate, candidate_id)
+
+def create_candidate(db: Session, candidate: schemas.CandidateCreate):
+    db_cand = models.Candidate(**candidate.dict())
+    db.add(db_cand)
+    db.commit()
+    db.refresh(db_cand)
+    return db_cand
+
+def update_candidate_status(db: Session, candidate_id: int, status: str):
+    db_cand = db.get(models.Candidate, candidate_id)
+    if not db_cand:
+        return None
+    db_cand.status = status
+    db.commit()
+    db.refresh(db_cand)
+    return db_cand
+
+def delete_candidate(db: Session, candidate_id: int):
+    cand = db.get(models.Candidate, candidate_id)
+    if not cand:
+        return False
+    db.delete(cand)
     db.commit()
     return True

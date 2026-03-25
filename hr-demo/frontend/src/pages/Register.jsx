@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 import { toast } from 'react-toastify';
 
 const Register = () => {
@@ -14,20 +15,13 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail);
-      }
+      await api.post('/auth/register', form);
       toast.success('Регистрация прошла успешно');
       navigate('/login');
     } catch (err) {
-      setError(err.message);
-      toast.error(err.message);
+      const msg = err.response?.data?.detail || 'Ошибка регистрации';
+      setError(msg);
+      toast.error(msg);
     }
   };
 

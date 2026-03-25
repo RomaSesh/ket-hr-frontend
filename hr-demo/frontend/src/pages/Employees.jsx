@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from '../api/employees';
+import { getDepartments } from '../api/departments';
+import { getPositions } from '../api/positions';
 import { toast } from 'react-toastify';
 
 function Employees() {
@@ -26,8 +28,8 @@ function Employees() {
       try {
         const [employeesData, deptsData, posData] = await Promise.all([
           getEmployees(),
-          fetch('/api/departments').then(res => res.json()),
-          fetch('/api/positions').then(res => res.json())
+          getDepartments(),
+          getPositions()
         ]);
         setEmployees(employeesData);
         setDepartmentsList(deptsData);

@@ -94,3 +94,63 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+# Vacation
+class VacationBase(BaseModel):
+    employee_id: int
+    start_date: date
+    end_date: date
+    type: str = "annual"
+    comment: Optional[str] = None
+
+class VacationCreate(VacationBase):
+    pass
+
+class VacationUpdate(BaseModel):
+    status: Optional[str] = None
+    comment: Optional[str] = None
+
+class Vacation(VacationBase):
+    id: int
+    status: str
+    created_at: datetime
+    approved_at: Optional[datetime] = None
+    class Config:
+        from_attributes = True
+
+# Vacancy
+class VacancyBase(BaseModel):
+    title: str
+    department_id: int
+    description: Optional[str] = None
+
+class VacancyCreate(VacancyBase):
+    pass
+
+class Vacancy(VacancyBase):
+    id: int
+    status: str
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Candidate
+class CandidateBase(BaseModel):
+    full_name: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    vacancy_id: int
+    resume_url: Optional[str] = None
+
+class CandidateCreate(CandidateBase):
+    pass
+
+class CandidateUpdate(BaseModel):
+    status: Optional[str] = None
+
+class Candidate(CandidateBase):
+    id: int
+    status: str
+    created_at: datetime
+    class Config:
+        from_attributes = True

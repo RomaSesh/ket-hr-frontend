@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Numeric, Text, TIMESTAMP, func
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Numeric, Text, TIMESTAMP, func, Date
 from sqlalchemy.orm import relationship
 from database import Base
+
 
 class Department(Base):
     __tablename__ = "departments"
@@ -13,6 +14,7 @@ class Department(Base):
 
     employees = relationship("Employee", back_populates="department")
     positions = relationship("Position", back_populates="department")
+    vacancies = relationship("Vacancy", back_populates="department")
 
 
 class Position(Base):
@@ -49,6 +51,7 @@ class Employee(Base):
     department = relationship("Department", back_populates="employees")
     user = relationship("User", back_populates="employee", uselist=False)
     history = relationship("EmployeeHistory", back_populates="employee")
+    vacations = relationship("Vacation", back_populates="employee")   # связь с отпусками
 
 
 class User(Base):
@@ -80,4 +83,49 @@ class EmployeeHistory(Base):
 
     employee = relationship("Employee", back_populates="history")
     changer = relationship("User", foreign_keys=[changed_by])
-    
+
+
+class Vacation(Base):
+    __tablename__ = "vacations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
+    type = Column(String(50), default="annual")        # annual, sick, unpaid
+    status = Column(String(20), default="pending")     # pending, approved, rejected
+    comment = Column(Text, nullable=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    approved_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    approved_at = Column(TIMESTAMP, nullable=True)
+
+    employee = relationship("Employee", back_populates="vacations")
+    approver = relationship("User", foreign_keys=[approved_by])
+
+
+class Vacancy(Base):
+    __tablename__ = "vacancies"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(150), nullable=False)
+    department_id = Column(Integer, ForeignKey("departments.id"))
+    description = Column(Text)
+    status = Column(String(20), default="open")   # open, closed
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+    department = relationship("Department", back_populates="vacancies")
+
+
+class Candidate(Base):
+    __tablename__ = "candidates"
+
+    id = Column(Integer, primary_key=True, index=True)
+    full_name = Column(String(200), nullable=False)
+    phone = Column(String(20))
+    email = Column(String(100))
+    vacancy_id = Column(Integer, ForeignKey("vacancies.id"))
+    status = Column(String(50), default="new")   # new, interview, hired, rejected
+    resume_url = Column(Text)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+    vacancy = relationship("Vacancy")
