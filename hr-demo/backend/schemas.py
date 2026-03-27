@@ -48,6 +48,13 @@ class EmployeeBase(BaseModel):
     phone: Optional[str] = None
     hire_date: date
     is_active: bool = True
+    # дополнительные поля
+    birth_date: Optional[date] = None
+    education: Optional[str] = None
+    specialty: Optional[str] = None
+    experience: Optional[str] = None
+    address: Optional[str] = None
+    personnel_number: Optional[str] = None
 
 class EmployeeCreate(EmployeeBase):
     pass
@@ -62,6 +69,12 @@ class EmployeeUpdate(BaseModel):
     phone: Optional[str] = None
     hire_date: Optional[date] = None
     is_active: Optional[bool] = None
+    birth_date: Optional[date] = None
+    education: Optional[str] = None
+    specialty: Optional[str] = None
+    experience: Optional[str] = None
+    address: Optional[str] = None
+    personnel_number: Optional[str] = None
 
 class Employee(EmployeeBase):
     id: int
@@ -152,5 +165,20 @@ class Candidate(CandidateBase):
     id: int
     status: str
     created_at: datetime
+    class Config:
+        from_attributes = True
+
+# EmployeeHistory
+class EmployeeHistoryBase(BaseModel):
+    action: str
+    field_name: Optional[str] = None
+    old_value: Optional[str] = None
+    new_value: Optional[str] = None
+    changed_by: int
+
+class EmployeeHistory(EmployeeHistoryBase):
+    id: int
+    employee_id: int
+    changed_at: datetime
     class Config:
         from_attributes = True

@@ -46,12 +46,19 @@ class Employee(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    # Дополнительные поля
+    birth_date = Column(Date, nullable=True)
+    education = Column(String(200), nullable=True)
+    specialty = Column(String(200), nullable=True)
+    experience = Column(String(50), nullable=True)
+    address = Column(String(300), nullable=True)
+    personnel_number = Column(String(50), nullable=True)
 
     position = relationship("Position", back_populates="employees")
     department = relationship("Department", back_populates="employees")
     user = relationship("User", back_populates="employee", uselist=False)
     history = relationship("EmployeeHistory", back_populates="employee")
-    vacations = relationship("Vacation", back_populates="employee")   # связь с отпусками
+    vacations = relationship("Vacation", back_populates="employee")
 
 
 class User(Base):

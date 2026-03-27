@@ -13,7 +13,7 @@ from database import get_db
 
 router = APIRouter(prefix="/positions", tags=["positions"])
 
-@router.get("/", response_model=List[Position])
+@router.get("", response_model=List[Position])
 def read_positions(db: Session = Depends(get_db)):
     return crud_get_positions(db)
 
@@ -24,7 +24,7 @@ def read_position(pos_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Должность не найдена")
     return db_pos
 
-@router.post("/", response_model=Position, status_code=201)
+@router.post("", response_model=Position, status_code=201)
 def create_position(position: PositionCreate, db: Session = Depends(get_db)):
     return crud_create_position(db, position)
 

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 import hashlib
+from pydantic import BaseModel   # добавлен импорт
 from models import User
 from schemas import User as UserSchema, UserCreate, Token, TokenData
 from database import get_db
@@ -17,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))  # 30 минут 30))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
 def verify_password(plain_password, hashed_password):
     return hashlib.sha256(plain_password.encode()).hexdigest() == hashed_password
@@ -72,7 +73,7 @@ def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depends(get
         raise credentials_exception
     return user
 
-async def get_current_user(
+def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ) -> User:
@@ -93,3 +94,21 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
     return user
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+@router.put("/auth/change-password")
+def change_password(
+    request: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not verify_password(request.current_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Неверный текущий пароль")
+    if len(request.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Пароль должен содержать не менее 6 символов")
+    current_user.password_hash = get_password_hash(request.new_password)
+    db.commit()
+    return {"message": "Пароль изменён"}

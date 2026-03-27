@@ -13,7 +13,7 @@ from database import get_db
 
 router = APIRouter(prefix="/departments", tags=["departments"])
 
-@router.get("/", response_model=List[Department])
+@router.get("", response_model=List[Department])
 def read_departments(skip: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=100), db: Session = Depends(get_db)):
     return crud_get_departments(db, skip=skip, limit=limit)
 
@@ -24,7 +24,7 @@ def read_department(dept_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Отдел не найден")
     return db_dept
 
-@router.post("/", response_model=Department, status_code=201)
+@router.post("", response_model=Department, status_code=201)
 def create_department(dept: DepartmentCreate, db: Session = Depends(get_db)):
     return crud_create_department(db, dept)
 

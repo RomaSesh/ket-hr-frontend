@@ -2,9 +2,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 from api import employees, departments, auth, positions, vacations, vacancies, candidates, reports
+
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="HR Management API", description="API для управления сотрудниками", version="1.0.0")
+app = FastAPI(
+    title="HR Management API",
+    description="API для управления сотрудниками",
+    version="1.0.0",
+    redirect_slashes=False
+)
 
 app.add_middleware(
     CORSMiddleware,

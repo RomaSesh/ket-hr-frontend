@@ -80,21 +80,51 @@ def get_employees(db: Session, skip: int = 0, limit: int = 100, department_id: O
 def get_employee(db: Session, employee_id: int) -> Optional[models.Employee]:
     return db.get(models.Employee, employee_id)
 
-def create_employee(db: Session, employee: schemas.EmployeeCreate) -> models.Employee:
+def create_employee(db: Session, employee: schemas.EmployeeCreate, user_id: int) -> models.Employee:
     db_emp = models.Employee(**employee.dict())
     db.add(db_emp)
     db.commit()
     db.refresh(db_emp)
+
+    # Запись в историю
+    history = models.EmployeeHistory(
+        employee_id=db_emp.id,
+        action="create",
+        field_name=None,
+        old_value=None,
+        new_value="Создание карточки сотрудника",
+        changed_by=user_id
+    )
+    db.add(history)
+    db.commit()
     return db_emp
 
-def update_employee(db: Session, employee_id: int, employee_update: schemas.EmployeeUpdate) -> Optional[models.Employee]:
+def update_employee(db: Session, employee_id: int, employee_update: schemas.EmployeeUpdate, user_id: int) -> Optional[models.Employee]:
     db_emp = db.get(models.Employee, employee_id)
     if not db_emp:
         return None
+    # Сохраняем старые значения для изменяемых полей
+    old_data = {}
     for key, value in employee_update.dict(exclude_unset=True).items():
+        old_data[key] = getattr(db_emp, key)
         setattr(db_emp, key, value)
     db.commit()
     db.refresh(db_emp)
+
+    # Запись в историю для каждого изменённого поля
+    for key, old_val in old_data.items():
+        new_val = getattr(db_emp, key)
+        if old_val != new_val:
+            history = models.EmployeeHistory(
+                employee_id=db_emp.id,
+                action="update",
+                field_name=key,
+                old_value=str(old_val) if old_val else None,
+                new_value=str(new_val) if new_val else None,
+                changed_by=user_id
+            )
+            db.add(history)
+    db.commit()
     return db_emp
 
 def delete_employee(db: Session, employee_id: int) -> bool:

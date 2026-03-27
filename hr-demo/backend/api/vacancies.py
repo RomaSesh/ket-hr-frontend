@@ -9,7 +9,7 @@ from models import User
 
 router = APIRouter(prefix="/vacancies", tags=["vacancies"])
 
-@router.get("/", response_model=List[Vacancy])
+@router.get("", response_model=List[Vacancy])
 def read_vacancies(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -26,7 +26,7 @@ def read_vacancy(vacancy_id: int, db: Session = Depends(get_db), current_user: U
         raise HTTPException(status_code=404, detail="Вакансия не найдена")
     return db_vac
 
-@router.post("/", response_model=Vacancy, status_code=201)
+@router.post("", response_model=Vacancy, status_code=201)
 def create_vacancy(vacancy: VacancyCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return create_vacancy(db, vacancy)
 
