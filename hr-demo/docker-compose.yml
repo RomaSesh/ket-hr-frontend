@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: hr-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: host.docker.internal
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Tahgan33
+      DB_NAME: i91590fx_db
+      JWT_SECRET: hr-system-secret-key-2024-tahgan33
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - hr-network
+
+  frontend:
+    build: ./frontend
+    container_name: hr-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - hr-network
+
+networks:
+  hr-network:
+    driver: bridge
