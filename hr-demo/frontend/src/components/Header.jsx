@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 const Header = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('access_token');
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -13,6 +12,20 @@ const Header = () => {
     toast.info('Вы вышли из системы');
     navigate('/login');
   };
+
+  // Безопасное получение user из localStorage
+  let userName = 'Пользователь';
+  let userInitial = 'П';
+  try {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      userName = user.full_name || user.username || 'Пользователь';
+      userInitial = userName.charAt(0).toUpperCase();
+    }
+  } catch (e) {
+    console.error('Ошибка парсинга user:', e);
+  }
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -32,23 +45,21 @@ const Header = () => {
           </button>
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-700 font-medium">
-                {user.full_name ? user.full_name[0] : 'И'}
-              </span>
+              <span className="text-gray-700 font-medium">{userInitial}</span>
             </div>
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-800">
-                {user.full_name || 'Иванова Е.П.'}
-              </p>
+              <p className="text-sm font-medium text-gray-800">{userName}</p>
               <p className="text-xs text-gray-500">Отдел кадров</p>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-3 py-1.5 text-sm text-gray-600 hover:text-red-600 transition-colors"
-          >
-            Выйти
-          </button>
+          {token && (
+            <button
+              onClick={handleLogout}
+              className="px-3 py-1.5 text-sm text-gray-600 hover:text-red-600 transition-colors"
+            >
+              Выйти
+            </button>
+          )}
         </div>
       </div>
     </header>

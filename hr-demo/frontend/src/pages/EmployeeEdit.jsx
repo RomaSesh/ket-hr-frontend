@@ -39,21 +39,21 @@ const EmployeeEdit = () => {
         ]);
         const emp = empRes.data;
         setForm({
-          first_name: emp.first_name || '',
-          last_name: emp.last_name || '',
-          middle_name: emp.middle_name || '',
-          position_id: emp.position_id || '',
-          department_id: emp.department_id || '',
+          first_name: emp.firstName || '',
+          last_name: emp.lastName || '',
+          middle_name: emp.middleName || '',
+          position_id: emp.positionId || '',
+          department_id: emp.departmentId || '',
           email: emp.email || '',
           phone: emp.phone || '',
-          hire_date: emp.hire_date ? emp.hire_date.split('T')[0] : '',
-          is_active: emp.is_active ?? true,
-          birth_date: emp.birth_date ? emp.birth_date.split('T')[0] : '',
+          hire_date: emp.hireDate ? emp.hireDate.split('T')[0] : '',
+          is_active: emp.isActive ?? true,
+          birth_date: emp.birthDate ? emp.birthDate.split('T')[0] : '',
           education: emp.education || '',
           specialty: emp.specialty || '',
           experience: emp.experience || '',
           address: emp.address || '',
-          personnel_number: emp.personnel_number || '',
+          personnel_number: emp.personnelNumber || '',
         });
         setDepartments(deptsRes.data);
         setPositions(posRes.data);
@@ -80,12 +80,28 @@ const EmployeeEdit = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.put(`/employees/${id}`, form);
+      await api.put(`/employees/${id}`, {
+        firstName: form.first_name,
+        lastName: form.last_name,
+        middleName: form.middle_name,
+        positionId: parseInt(form.position_id, 10),
+        departmentId: parseInt(form.department_id, 10),
+        email: form.email,
+        phone: form.phone,
+        hireDate: form.hire_date,
+        isActive: form.is_active,
+        birthDate: form.birth_date,
+        education: form.education,
+        specialty: form.specialty,
+        experience: form.experience,
+        address: form.address,
+        personnelNumber: form.personnel_number
+      });
       toast.success('Сотрудник успешно обновлён');
       navigate(`/employees/${id}`);
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.detail || 'Ошибка при сохранении');
+      toast.error(err.response?.data?.error || 'Ошибка при сохранении');
     } finally {
       setSaving(false);
     }

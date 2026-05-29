@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const instance = axios.create({
+const api = axios.create({
   baseURL: '/api',
-  timeout: 5000,
 });
 
-instance.interceptors.request.use((config) => {
+// Добавляем токен в каждый запрос
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -13,4 +13,4 @@ instance.interceptors.request.use((config) => {
   return config;
 });
 
-export default instance;
+export default api;
