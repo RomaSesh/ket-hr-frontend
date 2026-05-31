@@ -12,9 +12,11 @@ import Dashboard from './pages/Dashboard';
 import Departments from './pages/Departments';
 import Settings from './pages/Settings';
 import Help from './pages/Help';
+import AdminUsers from './pages/AdminUsers';           // ← добавлено
 import PrivateRoute from './components/PrivateRoute';
 import api from './api/axios';
 import './index.css';
+
 
 function AppContent() {
   const location = useLocation();
@@ -25,9 +27,12 @@ function AppContent() {
       const token = localStorage.getItem('access_token');
       if (token) {
         try {
-          await api.get('/auth/me');
+          const res = await api.get('/auth/me');
+          // Сохраняем пользователя в localStorage для использования в Sidebar и других компонентах
+          localStorage.setItem('user', JSON.stringify(res.data));
         } catch (error) {
           localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
           navigate('/login');
         }
       } else if (location.pathname !== '/login' && location.pathname !== '/register') {
@@ -51,6 +56,8 @@ function AppContent() {
       <Route path="/departments" element={<PrivateRoute><Departments /></PrivateRoute>} />
       <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
       <Route path="/help" element={<PrivateRoute><Help /></PrivateRoute>} />
+      {/* Админ-панель – доступ только для пользователей с ролью admin (проверка внутри компонента) */}
+      <Route path="/admin/users" element={<PrivateRoute><AdminUsers /></PrivateRoute>} />
       <Route path="/" element={<Navigate to="/dashboard" />} />
     </Routes>
   );

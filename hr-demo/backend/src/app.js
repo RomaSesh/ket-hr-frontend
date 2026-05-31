@@ -12,7 +12,7 @@ const vacancyRoutes = require('./routes/vacancies');
 const vacationRoutes = require('./routes/vacations');
 const authRoutes = require('./routes/auth');
 const reportRoutes = require('./routes/reports');   // добавить
-
+const adminRoutes = require('./routes/admin');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -29,7 +29,7 @@ app.use('/api/vacancies', vacancyRoutes);
 app.use('/api/vacations', vacationRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);   // добавить
-
+app.use('/api/admin', adminRoutes);
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString(), uptime: process.uptime() });
 });
